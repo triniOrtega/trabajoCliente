@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <img class="logo" src="logo.png" alt="image">
+
+    <style>
+        #tablacitas {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #tablacitas td,
+        #tablacitas th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #tablacitas tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #tablacitas tr:hover {
+            background-color: #ddd;
+        }
+
+        #tablacitas th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #1f5dc2;
+            color: white;
+        }
+
+        input[type=text],
+        input[type=number] select {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type=submit] {
+            width: 100%;
+            background-color: #1f5dc2;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type=submit]:hover {
+            background-color: #1f5dc2;
+        }
+
+        p,
+        h3 {
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 12px 20px;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            background-color: #f8f8f8;
+            resize: none;
+        }
+
+        input[type=button],
+        input[type=submit],
+        input[type=reset] {
+            background-color: #1f5dc2;
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            text-decoration: none;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        button {
+            padding: 2px 4px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        input[type=number] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .formulario {
+            margin: 60px 20px;
+        }
+
+        .logo {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 20%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1></h1>
+
+    <table id="tablacitas">
+        <thead>
+            <tr>
+                <th>Fecha cita</th>
+                <th>Nombre</th>
+                <th>Primer Apellido</th>
+                <th>Segundo Apellido</th>
+                <th>Teléfono</th>
+                <th>DNI</th>
+                <th>Fecha Nacimiento</th>
+                <th>Observaciones</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+    </table>
+    <div class="formulario">
+        <form>
+            <label for="fechanuevacita">Fecha cita:</label><br>
+            <input type="datetime-local" id="fechanuevacita" name="fechanuevacita"><br>
+            <label for="nombre">Nombre:</label><br>
+            <input type="text" id="nombre" name="nombre"><br>
+            <label for="primerapellido">Primer apellido:</label><br>
+            <input type="text" id="primerapellido" name="primerapellido"><br>
+            <label for="segundoapellido">Segundo apellido:</label><br>
+            <input type="text" id="segundoapellido" name="segundoapellido"><br>
+            <label for="dni">DNI:</label><br>
+            <input type="text" id="dni" name="dni"><br>
+            <label for="telefono">Teléfono:</label><br>
+            <input type="number" id="telefono" name="telefono"><br>
+            <label for="fechanacimiento">Fecha de nacimiento:</label><br>
+            <input type="date" id="fechanacimiento" name="fechanacimiento"><br>
+            <label for="observaciones">Observaciones:</label><br>
+            <textarea id="observaciones" name="observaciones" rows="5" cols="50">
+        </textarea><br>
+            <input type="button" onclick="guardarCita()" value="Guardar">
+        </form>
+
+    </div>
+
+    <script>
+        window.onload = function () {
+            generateTable();
+        }
+
+        function guardarCita() {
+            var cita = {
+                "id": new Date().getTime(),
+                "fechaCita": document.getElementById("fechanuevacita").value,
+                "nombrePaciente": document.getElementById("nombre").value,
+                "primerApellido": document.getElementById("primerapellido").value,
+                "segundoApellido": document.getElementById("segundoapellido").value,
+                "dni": document.getElementById("dni").value,
+                "telefono": document.getElementById("telefono").value,
+                "fechaNacimiento": document.getElementById("fechanacimiento").value,
+                "observaciones": document.getElementById("observaciones").value
+            }
+
+            var citasGuardadas = JSON.parse(window.localStorage.getItem("citas"));
+            if (citasGuardadas == null) {
+                citasGuardadas = []
+            }
+
+            citasGuardadas.push(cita)
+            window.localStorage.setItem("citas", JSON.stringify(citasGuardadas));
+
+            generateTable();
+        }
+
+        function generateTable() {
+
+            if (document.getElementById("cuerpotabla") != null) {
+                document.getElementById("cuerpotabla").remove();
+            }
+
+
+            const table = document.getElementById("tablacitas");
+            var tblBody = document.createElement("tbody");
+            tblBody.setAttribute("id", "cuerpotabla")
+            var citasGuardadas = JSON.parse(window.localStorage.getItem("citas"));
+
+            for (let i = 0; i < citasGuardadas.length; i++) {
+
+                const fila = document.createElement("tr");
+                var celda = document.createElement("td");
+                var textoCelda = document.createTextNode(citasGuardadas[i].fechaCita);
+
+                celda.appendChild(textoCelda);
+                fila.appendChild(celda);
+
+                celda = document.createElement("td");
+                textoCelda = document.createTextNode(citasGuardadas[i].nombrePaciente);
+                celda.appendChild(textoCelda);
+                fila.appendChild(celda);
+
+                celda = document.createElement("td");
+                textoCelda = document.createTextNode(citasGuardadas[i].primerApellido);
+                celda.appendChild(textoCelda);
+                fila.appendChild(celda);
+
+                celda = document.createElement("td");
+                textoCelda = document.createTextNode(citasGuardadas[i].segundoApellido);
+                celda.appendChild(textoCelda);
+                fila.appendChild(celda);
+
+                celda = document.createElement("td");
+                textoCelda = document.createTextNode(citasGuardadas[i].telefono);
+                celda.appendChild(textoCelda);
+                fila.appendChild(celda);
+
+                celda = document.createElement("td");
+                textoCelda = document.createTextNode(citasGuardadas[i].dni);
+                celda.appendChild(textoCelda);
+                fila.appendChild(celda);
+
+                celda = document.createElement("td");
+                textoCelda = document.createTextNode(citasGuardadas[i].fechaNacimiento);
+                celda.appendChild(textoCelda);
+                fila.appendChild(celda);
+
+                celda = document.createElement("td");
+                textoCelda = document.createTextNode(citasGuardadas[i].observaciones);
+                celda.appendChild(textoCelda);
+                fila.appendChild(celda);
+
+                celda = document.createElement("td");
+                var boton1 = document.createElement("button");
+                var boton2 = document.createElement("button");
+                boton1.innerHTML = "Modificar";
+                boton1.setAttribute("type", "button");
+                boton2.innerHTML = "Borrar";
+                boton2.setAttribute("type", "button");
+                celda.appendChild(boton1);
+                celda.appendChild(boton2);
+                fila.appendChild(celda);
+
+
+
+                tblBody.appendChild(fila);
+                table.appendChild(tblBody);
+            }
+
+
+
+
+        }
+
+
+
+    </script>
+
+</body>
+<footer>
+    <!--datos de contacto de la clinica-->
+
+    <h3>CONTACTO</h3>
+
+    <p>
+        Calle Trinidad, 8, Centro, 18001 Granada<br>
+        958 75 98 31<br>
+        632 48 31 75<br>
+        clinicamedacdentgranada@clinicasmedacdent.es<br>
+    </p>
+
+</footer>
+
+</html>
