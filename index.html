@@ -47,7 +47,6 @@
         }
 
         input[type=submit] {
-            width: 100%;
             background-color: #1f5dc2;
             color: white;
             padding: 14px 20px;
@@ -142,23 +141,25 @@
     <div class="formulario">
         <form>
             <label for="fechanuevacita">Fecha cita:</label><br>
-            <input type="datetime-local" id="fechanuevacita" name="fechanuevacita"><br>
+            <input type="datetime-local" id="fechanuevacita" name="fechanuevacita" required><br>
             <label for="nombre">Nombre:</label><br>
-            <input type="text" id="nombre" name="nombre"><br>
+            <input type="text" id="nombre" name="nombre" required><br>
             <label for="primerapellido">Primer apellido:</label><br>
-            <input type="text" id="primerapellido" name="primerapellido"><br>
+            <input type="text" id="primerapellido" name="primerapellido" required><br>
             <label for="segundoapellido">Segundo apellido:</label><br>
             <input type="text" id="segundoapellido" name="segundoapellido"><br>
             <label for="dni">DNI:</label><br>
-            <input type="text" id="dni" name="dni"><br>
+            <input type="text" id="dni" name="dni" pattern="[0-9]{8}[A-Za-z]{1}" required
+                title="El DNI requiere 8 dígitos y una letra"><br>
             <label for="telefono">Teléfono:</label><br>
-            <input type="number" id="telefono" name="telefono"><br>
+            <input type="tel" id="telefono" name="telefono" pattern="[0-9]{9}" required 
+                title="Requiere 9 dígitos"><br>
             <label for="fechanacimiento">Fecha de nacimiento:</label><br>
-            <input type="date" id="fechanacimiento" name="fechanacimiento"><br>
+            <input type="date" id="fechanacimiento" name="fechanacimiento" required><br>
             <label for="observaciones">Observaciones:</label><br>
             <textarea id="observaciones" name="observaciones" rows="5" cols="50">
         </textarea><br>
-            <input type="button" onclick="guardarCita()" value="Guardar">
+            <input type="submit" onclick="guardarCita()" value="Guardar">
         </form>
 
     </div>
@@ -169,6 +170,7 @@
         }
 
         function guardarCita() {
+
             var cita = {
                 "id": new Date().getTime(),
                 "fechaCita": document.getElementById("fechanuevacita").value,
@@ -204,6 +206,9 @@
             tblBody.setAttribute("id", "cuerpotabla")
             var citasGuardadas = JSON.parse(window.localStorage.getItem("citas"));
 
+            if (citasGuardadas == null) {
+                return false
+            }
             for (let i = 0; i < citasGuardadas.length; i++) {
 
                 const fila = document.createElement("tr");
@@ -269,7 +274,6 @@
 
 
         }
-
 
 
     </script>
