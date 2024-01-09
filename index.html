@@ -152,8 +152,7 @@
             <input type="text" id="dni" name="dni" pattern="[0-9]{8}[A-Za-z]{1}" required
                 title="El DNI requiere 8 dígitos y una letra"><br>
             <label for="telefono">Teléfono:</label><br>
-            <input type="tel" id="telefono" name="telefono" pattern="[0-9]{9}" required 
-                title="Requiere 9 dígitos"><br>
+            <input type="tel" id="telefono" name="telefono" pattern="[0-9]{9}" required title="Requiere 9 dígitos"><br>
             <label for="fechanacimiento">Fecha de nacimiento:</label><br>
             <input type="date" id="fechanacimiento" name="fechanacimiento" required><br>
             <label for="observaciones">Observaciones:</label><br>
@@ -165,30 +164,44 @@
     </div>
 
     <script>
+
         window.onload = function () {
             generateTable();
         }
 
         function guardarCita() {
-
-            var cita = {
-                "id": new Date().getTime(),
-                "fechaCita": document.getElementById("fechanuevacita").value,
-                "nombrePaciente": document.getElementById("nombre").value,
-                "primerApellido": document.getElementById("primerapellido").value,
-                "segundoApellido": document.getElementById("segundoapellido").value,
-                "dni": document.getElementById("dni").value,
-                "telefono": document.getElementById("telefono").value,
-                "fechaNacimiento": document.getElementById("fechanacimiento").value,
-                "observaciones": document.getElementById("observaciones").value
-            }
-
             var citasGuardadas = JSON.parse(window.localStorage.getItem("citas"));
             if (citasGuardadas == null) {
                 citasGuardadas = []
             }
-
-            citasGuardadas.push(cita)
+            if(document.idCitaSelectionada != null){
+                for (let i = 0; i < citasGuardadas.length; i++) { 
+                    if(document.idCitaSelectionada == citasGuardadas[i].id){
+                        citasGuardadas[i].fechaCita = document.getElementById("fechanuevacita").value
+                        citasGuardadas[i].nombrePaciente = document.getElementById("nombre").value
+                        citasGuardadas[i].primerApellido = document.getElementById("primerapellido").value
+                        citasGuardadas[i].segundoApellido = document.getElementById("segundoapellido").value
+                        citasGuardadas[i].dni = document.getElementById("dni").value
+                        citasGuardadas[i].telefono = document.getElementById("telefono").value
+                        citasGuardadas[i].fechaNacimiento = document.getElementById("fechanacimiento").value
+                        citasGuardadas[i].observaciones = document.getElementById("observaciones").value
+                        document.idCitaSelectionada = null;
+                    }
+                }
+            } else {
+                var cita = {
+                    "id": new Date().getTime(),
+                    "fechaCita": document.getElementById("fechanuevacita").value,
+                    "nombrePaciente": document.getElementById("nombre").value,
+                    "primerApellido": document.getElementById("primerapellido").value,
+                    "segundoApellido": document.getElementById("segundoapellido").value,
+                    "dni": document.getElementById("dni").value,
+                    "telefono": document.getElementById("telefono").value,
+                    "fechaNacimiento": document.getElementById("fechanacimiento").value,
+                    "observaciones": document.getElementById("observaciones").value
+                }          
+                citasGuardadas.push(cita)
+            }
             window.localStorage.setItem("citas", JSON.stringify(citasGuardadas));
 
             generateTable();
@@ -214,9 +227,10 @@
                 const fila = document.createElement("tr");
                 var celda = document.createElement("td");
                 var textoCelda = document.createTextNode(citasGuardadas[i].fechaCita);
-
                 celda.appendChild(textoCelda);
                 fila.appendChild(celda);
+
+                fila.setAttribute("id", citasGuardadas[i].id);
 
                 celda = document.createElement("td");
                 textoCelda = document.createTextNode(citasGuardadas[i].nombrePaciente);
@@ -254,14 +268,16 @@
                 fila.appendChild(celda);
 
                 celda = document.createElement("td");
-                var boton1 = document.createElement("button");
-                var boton2 = document.createElement("button");
-                boton1.innerHTML = "Modificar";
-                boton1.setAttribute("type", "button");
-                boton2.innerHTML = "Borrar";
-                boton2.setAttribute("type", "button");
-                celda.appendChild(boton1);
-                celda.appendChild(boton2);
+                var botonModificar = document.createElement("button");
+                var botonBorrar = document.createElement("button");
+                botonModificar.innerHTML = "Modificar";
+                botonModificar.setAttribute("type", "button");
+                botonModificar.setAttribute("onclick", "modificarFila(" + citasGuardadas[i].id + ")");
+                botonBorrar.innerHTML = "Borrar";
+                botonBorrar.setAttribute("type", "button");
+                botonBorrar.setAttribute("onclick", "borrarFila(" + citasGuardadas[i].id + ")");
+                celda.appendChild(botonModificar);
+                celda.appendChild(botonBorrar);
                 fila.appendChild(celda);
 
 
@@ -271,10 +287,47 @@
             }
 
 
+        }
 
+        function borrarFila(id) {
+
+            console.log("soy borrar fila" + id);
+
+            document.getElementById(id).remove();
+
+            var citasGuardadas = JSON.parse(window.localStorage.getItem("citas"));
+
+            for (let i = 0; i < citasGuardadas.length; i++) {
+                if (citasGuardadas[i].id == id) {
+                    citasGuardadas.splice(i, 1)
+                }
+            }
+
+            window.localStorage.setItem("citas", JSON.stringify(citasGuardadas));
 
         }
 
+        function modificarFila(id) {
+
+            console.log("soy modificar fila" + id);
+
+            var citasGuardadas = JSON.parse(window.localStorage.getItem("citas"));
+
+            for (let i = 0; i < citasGuardadas.length; i++) {
+                if (citasGuardadas[i].id == id) {
+                    document.idCitaSelectionada = id;
+                    document.getElementById("fechanuevacita").value = citasGuardadas[i].fechaCita;
+                    document.getElementById("nombre").value = citasGuardadas[i].nombrePaciente;
+                    document.getElementById("primerapellido").value = citasGuardadas[i].primerApellido;
+                    document.getElementById("segundoapellido").value = citasGuardadas[i].segundoApellido;
+                    document.getElementById("dni").value = citasGuardadas[i].dni;
+                    document.getElementById("telefono").value = citasGuardadas[i].telefono;
+                    document.getElementById("fechanacimiento").value = citasGuardadas[i].fechaNacimiento;
+                    document.getElementById("observaciones").value = citasGuardadas[i].observaciones;
+                }
+            }
+
+        }
 
     </script>
 
